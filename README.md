@@ -15,7 +15,6 @@ few digital pins and the standard `Servo` library will do.
 | [`Servo`](Servo/Servo.ino) | Sweeps a servo back and forth between 0° and 180°. | Servo signal → pin 10 |
 | [`ultrasonic_sensor`](ultrasonic_sensor/ultrasonic_sensor.ino) | Measures distance and lights an LED when the nearest object is more than 10 cm away. Prints readings to the serial monitor. | trig → 9, echo → 10, LED → 2 |
 | [`servo_ultrasonic`](servo_ultrasonic/servo_ultrasonic.ino) | Turns the servo 90° whenever something comes within 15 cm. | trig → 8, echo → 9, servo → 10 |
-| [`sketch_jul8a`](sketch_jul8a/sketch_jul8a.ino) | Scratch sketch — currently a copy of `LED`. | LED on pin 13 (on-board) |
 
 ## Hardware used
 
