@@ -1253,7 +1253,7 @@
     <h2>Exercise: light two LEDs</h2>
 
     <div class="prose">
-      <p class="lead">Here is a schematic and nothing else. Your job is to turn it into a working breadboard — no build photo this time.</p>
+      <p class="lead">A schematic, and underneath it one way to build it. Read the schematic first and work out where each leg goes — then check yourself against the board before you touch a single wire.</p>
       <p>Both LEDs sit between the same two nodes, <span class="pin hot">5V</span> and <span class="pin cold">GND</span>, in two separate branches. That arrangement is called <strong>parallel</strong>. Each branch gets its own 1 kΩ resistor, and each branch carries its own 3 mA independently of the other.</p>
     </div>
 
@@ -1329,7 +1329,141 @@
           <text class="lbl lbl-sm" x="472" y="112">the other stays lit.</text>
         </svg>
       </div>
-      <figcaption><b>Fig. 7</b> Build this. Two LEDs in parallel, each with its own current-limiting resistor. Note there is no drawing of the breadboard — working out which holes to use is the exercise.</figcaption>
+      <figcaption><b>Fig. 7</b> Build this. Two LEDs in parallel, each with its own current-limiting resistor. Fig. 8 shows one way to lay it out.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 740 620" role="img" aria-label="Breadboard build of the two-LED exercise: two identical branches, each a jumper from the plus rail, a 1 kilohm resistor, an LED, and a jumper back to the minus rail.">
+          <defs>
+            <pattern id="holes3" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect class="s-hole" x="7" y="7" width="6" height="6" rx="1.4"/>
+            </pattern>
+          </defs>
+
+          <g transform="translate(40,0)">
+
+          <rect class="s-board" x="60" y="30" width="360" height="540" rx="6"/>
+          <rect x="60" y="30" width="360" height="540" rx="6" fill="none" stroke="var(--rule)" stroke-width="1"/>
+          <rect x="240" y="30" width="20" height="540" fill="var(--paper)"/>
+
+          <line x1="64"  y1="52" x2="64"  y2="548" stroke="var(--cold)" stroke-width="2"/>
+          <line x1="120" y1="52" x2="120" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="370" y1="52" x2="370" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="416" y1="52" x2="416" y2="548" stroke="var(--cold)" stroke-width="2"/>
+
+          <rect x="70"  y="55" width="44"  height="490" fill="url(#holes3)"/>
+          <rect x="135" y="55" width="100" height="490" fill="url(#holes3)"/>
+          <rect x="265" y="55" width="100" height="490" fill="url(#holes3)"/>
+          <rect x="376" y="55" width="44"  height="490" fill="url(#holes3)"/>
+
+          <text class="lbl lbl-sm" x="150" y="566" text-anchor="middle">A</text>
+          <text class="lbl lbl-sm" x="170" y="566" text-anchor="middle">B</text>
+          <text class="lbl lbl-sm" x="190" y="566" text-anchor="middle">C</text>
+          <text class="lbl lbl-sm" x="210" y="566" text-anchor="middle">D</text>
+          <text class="lbl lbl-sm" x="230" y="566" text-anchor="middle">E</text>
+
+          <text class="lbl lbl-sm" x="430" y="114">3</text>
+          <text class="lbl lbl-sm" x="430" y="214">8</text>
+          <text class="lbl lbl-sm" x="430" y="274">11</text>
+          <text class="lbl lbl-sm" x="430" y="334">14</text>
+          <text class="lbl lbl-sm" x="430" y="434">19</text>
+          <text class="lbl lbl-sm" x="430" y="494">22</text>
+
+          <!-- incoming supply -->
+          <path d="M110 70 v-46" class="k-hot"/>
+          <path d="M90 70 v-30 h-40" class="k-cold"/>
+          <text class="lbl lbl-hot"  x="118" y="18">from 5V</text>
+          <text class="lbl lbl-cold" x="46"  y="36" text-anchor="end">from GND</text>
+          <circle cx="110" cy="70" r="4.5" class="s-hot"/>
+          <circle cx="90"  cy="70" r="4.5" class="s-cold"/>
+
+          <!-- ===== BRANCH 1 ===== -->
+          <path d="M110 110 h40" class="k-hot"/>
+          <circle cx="110" cy="110" r="4.5" class="s-hot"/>
+          <circle cx="150" cy="110" r="4.5" class="s-hot"/>
+
+          <path d="M170 110 v100" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="158" y="132" width="24" height="56" rx="11" fill="#D8C9A6" stroke="var(--muted)" stroke-width="1"/>
+          <rect x="158" y="140" width="24" height="8" fill="#6B4A2F"/>
+          <rect x="158" y="152" width="24" height="8" fill="#1A1A1A"/>
+          <rect x="158" y="164" width="24" height="8" fill="#C0392B"/>
+          <rect x="158" y="176" width="24" height="6" fill="#C9A227"/>
+          <circle cx="170" cy="110" r="4.5" class="s-ink"/>
+          <circle cx="170" cy="210" r="4.5" class="s-ink"/>
+
+          <circle cx="190" cy="240" r="26" class="s-lamp glow" opacity="0.3"/>
+          <path d="M190 210 v16" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M190 254 v16" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M176 254 v-14 a14 14 0 0 1 28 0 v14 z" class="s-lamp" opacity="0.9"/>
+          <line x1="204" y1="240" x2="204" y2="254" stroke="var(--ink)" stroke-width="2.5"/>
+          <circle cx="190" cy="210" r="4.5" class="s-hot"/>
+          <circle cx="190" cy="270" r="4.5" class="s-cold"/>
+
+          <path d="M210 270 C 190 306, 120 306, 90 276" class="k-cold"/>
+          <circle cx="210" cy="270" r="4.5" class="s-cold"/>
+          <circle cx="90"  cy="270" r="4.5" class="s-cold"/>
+
+          <rect class="chip" x="218" y="203" width="88" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-hot"  x="223" y="214">C8 · long leg</text>
+          <rect class="chip" x="218" y="263" width="100" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-cold" x="223" y="274">C11 · short leg</text>
+
+          <!-- ===== BRANCH 2 ===== -->
+          <path d="M110 330 h40" class="k-hot"/>
+          <circle cx="110" cy="330" r="4.5" class="s-hot"/>
+          <circle cx="150" cy="330" r="4.5" class="s-hot"/>
+
+          <path d="M170 330 v100" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="158" y="352" width="24" height="56" rx="11" fill="#D8C9A6" stroke="var(--muted)" stroke-width="1"/>
+          <rect x="158" y="360" width="24" height="8" fill="#6B4A2F"/>
+          <rect x="158" y="372" width="24" height="8" fill="#1A1A1A"/>
+          <rect x="158" y="384" width="24" height="8" fill="#C0392B"/>
+          <rect x="158" y="396" width="24" height="6" fill="#C9A227"/>
+          <circle cx="170" cy="330" r="4.5" class="s-ink"/>
+          <circle cx="170" cy="430" r="4.5" class="s-ink"/>
+
+          <circle cx="190" cy="460" r="26" class="s-lamp glow" opacity="0.3"/>
+          <path d="M190 430 v16" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M190 474 v16" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M176 474 v-14 a14 14 0 0 1 28 0 v14 z" class="s-lamp" opacity="0.9"/>
+          <line x1="204" y1="460" x2="204" y2="474" stroke="var(--ink)" stroke-width="2.5"/>
+          <circle cx="190" cy="430" r="4.5" class="s-hot"/>
+          <circle cx="190" cy="490" r="4.5" class="s-cold"/>
+
+          <path d="M210 490 C 190 526, 120 526, 90 496" class="k-cold"/>
+          <circle cx="210" cy="490" r="4.5" class="s-cold"/>
+          <circle cx="90"  cy="490" r="4.5" class="s-cold"/>
+
+          <rect class="chip" x="218" y="423" width="94" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-hot"  x="223" y="434">C19 · long leg</text>
+          <rect class="chip" x="218" y="483" width="100" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-cold" x="223" y="494">C22 · short leg</text>
+
+          <!-- ===== NODE LISTS ===== -->
+          <text class="lbl-cap lbl-hot" x="460" y="108">Branch 1</text>
+          <text class="lbl lbl-sm" x="460" y="128">+ rail  →  A3</text>
+          <text class="lbl lbl-sm" x="460" y="142">R1:  B3  →  B8</text>
+          <text class="lbl lbl-sm" x="460" y="156">LED1:  C8  →  C11</text>
+          <text class="lbl lbl-sm" x="460" y="170">D11  →  − rail</text>
+
+          <text class="lbl-cap lbl-hot" x="460" y="328">Branch 2</text>
+          <text class="lbl lbl-sm" x="460" y="348">+ rail  →  A14</text>
+          <text class="lbl lbl-sm" x="460" y="362">R2:  B14  →  B19</text>
+          <text class="lbl lbl-sm" x="460" y="376">LED2:  C19  →  C22</text>
+          <text class="lbl lbl-sm" x="460" y="390">D22  →  − rail</text>
+
+          <text class="lbl-cap lbl-acc" x="460" y="462">Why this is parallel</text>
+          <text class="lbl lbl-sm" x="460" y="482">Both branches start on the same</text>
+          <text class="lbl lbl-sm" x="460" y="496">+ rail and finish on the same</text>
+          <text class="lbl lbl-sm" x="460" y="510">− rail, but share no row in</text>
+          <text class="lbl lbl-sm" x="460" y="524">between. Pull one LED out and</text>
+          <text class="lbl lbl-sm" x="460" y="538">the other keeps its own path.</text>
+
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 8</b> One correct build of Fig. 7. The two branches sit in separate row groups so nothing shares a node by accident. Any rows would do — what matters is that each branch keeps its own.</figcaption>
     </figure>
 
     <div class="exercise">
@@ -1350,7 +1484,7 @@
 
         <h3>Your steps</h3>
         <ul class="checklist">
-          <li><span class="box"></span><span><strong>Plan on paper first.</strong> Write the node list before you touch a component — which row each leg goes in, from 5 V all the way back to GND. Show it to me before you build.</span></li>
+          <li><span class="box"></span><span><strong>Predict before you copy.</strong> Cover Fig. 8 and write your own node list straight from the schematic — which row each leg goes in, from 5 V all the way back to GND. Then compare. A layout that differs from mine but still works is a good sign, not a mistake.</span></li>
           <li><span class="box"></span><span><strong>Wire it with the USB unplugged.</strong> Power the rails first (5 V → red rail, GND → blue rail), then build both branches.</span></li>
           <li><span class="box"></span><span><strong>Give each LED its own resistor.</strong> Two LEDs sharing one resistor is a different circuit, and a worse one — the brighter LED steals current from the dimmer one.</span></li>
           <li><span class="box"></span><span><strong>Keep the branches in different rows.</strong> If LED1's anode and LED2's anode land in the same five-hole row, you have joined them by accident.</span></li>
