@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arduino Basics — Ashivni's Robotics Class</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  img, svg { max-width: 100%; }
+</style>
+</head>
+<body>
+<style>
+  :root {
+    --paper:   #F2F4F0;
+    --panel:   #FBFCFA;
+    --board:   #E6E9E1;
+    --hole:    #2C332D;
+    --ink:     #141C17;
+    --muted:   #5C6A61;
+    --rule:    #D2DAD1;
+    --rule-2:  #E3E8E1;
+    --accent:  #0B6A4C;
+    --accent-soft: #0B6A4C1F;
+    --hot:     #C33A28;
+    --hot-soft:#C33A2822;
+    --cold:    #2A5FA8;
+    --cold-soft:#2A5FA822;
+    --lamp:    #B87333;
+
+    --display: "Futura", "Futura PT", "Avenir Next", "Century Gothic", "Trebuchet MS", sans-serif;
+    --serif:   "Charter", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --mono:    "Menlo", "SF Mono", ui-monospace, "Consolas", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:   #0F1411;
+      --panel:   #161D19;
+      --board:   #232B25;
+      --hole:    #080B09;
+      --ink:     #E5ECE4;
+      --muted:   #93A29A;
+      --rule:    #2B352E;
+      --rule-2:  #212A24;
+      --accent:  #57CFA0;
+      --accent-soft: #57CFA024;
+      --hot:     #F0755F;
+      --hot-soft:#F0755F26;
+      --cold:    #78ADEC;
+      --cold-soft:#78ADEC26;
+      --lamp:    #E3A863;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:   #0F1411;
+    --panel:   #161D19;
+    --board:   #232B25;
+    --hole:    #080B09;
+    --ink:     #E5ECE4;
+    --muted:   #93A29A;
+    --rule:    #2B352E;
+    --rule-2:  #212A24;
+    --accent:  #57CFA0;
+    --accent-soft: #57CFA024;
+    --hot:     #F0755F;
+    --hot-soft:#F0755F26;
+    --cold:    #78ADEC;
+    --cold-soft:#78ADEC26;
+    --lamp:    #E3A863;
+  }
+
+  :root[data-theme="light"] {
+    --paper:   #F2F4F0;
+    --panel:   #FBFCFA;
+    --board:   #E6E9E1;
+    --hole:    #2C332D;
+    --ink:     #141C17;
+    --muted:   #5C6A61;
+    --rule:    #D2DAD1;
+    --rule-2:  #E3E8E1;
+    --accent:  #0B6A4C;
+    --accent-soft: #0B6A4C1F;
+    --hot:     #C33A28;
+    --hot-soft:#C33A2822;
+    --cold:    #2A5FA8;
+    --cold-soft:#2A5FA822;
+    --lamp:    #B87333;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px 96px;
+  }
+
+  /* ---------- Title block ---------- */
+
+  .titleblock {
+    border: 1px solid var(--ink);
+    margin: 40px 0 0;
+    background: var(--panel);
+  }
+
+  .titleblock-main {
+    padding: 34px 30px 30px;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+
+  h1 {
+    font-family: var(--display);
+    font-size: clamp(38px, 7vw, 72px);
+    line-height: 0.94;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  h1 .sub {
+    display: block;
+    font-size: clamp(17px, 2.6vw, 24px);
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 18px;
+    line-height: 1.3;
+  }
+
+  .titleblock-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1px;
+    background: var(--panel);
+  }
+
+  /* Hairlines via box-shadow, not a container background: an auto-fit grid
+     with an incomplete last row would otherwise print its empty tracks as
+     solid blocks of rule colour. */
+  .cell {
+    padding: 14px 18px 16px;
+    background: var(--panel);
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  .cell-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .cell-value {
+    font-family: var(--display);
+    font-size: 15px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ---------- Contents ---------- */
+
+  .contents {
+    margin: 46px 0 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(196px, 1fr));
+    gap: 1px;
+    background: var(--paper);
+  }
+
+  .contents a {
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--rule);
+    padding: 15px 16px 16px;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    transition: background 140ms ease;
+  }
+
+  .contents a:hover,
+  .contents a:focus-visible { background: var(--accent-soft); }
+
+  .contents .n {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .contents .t {
+    font-family: var(--display);
+    font-size: 15px;
+    line-height: 1.28;
+    text-wrap: balance;
+  }
+
+  /* ---------- Sections ---------- */
+
+  .block {
+    margin-top: 68px;
+    padding-top: 26px;
+    border-top: 2px solid var(--ink);
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    column-gap: 34px;
+  }
+
+  .block > * { grid-column: 2; }
+
+  .rail {
+    grid-column: 1;
+    grid-row: 1 / 40;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    position: sticky;
+    top: 22px;
+    align-self: start;
+  }
+
+  h2 {
+    font-family: var(--display);
+    font-size: clamp(26px, 3.6vw, 36px);
+    line-height: 1.08;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    text-wrap: balance;
+    margin: 0 0 20px;
+    max-width: 22ch;
+  }
+
+  h3 {
+    font-family: var(--display);
+    font-size: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--accent);
+    margin: 40px 0 12px;
+  }
+
+  .prose { max-width: 66ch; }
+
+  .prose p { margin: 0 0 18px; }
+  .prose ul, .prose ol { margin: 0 0 20px; padding-left: 22px; }
+  .prose li { margin-bottom: 9px; }
+
+  .lead {
+    font-size: 20px;
+    line-height: 1.52;
+    color: var(--muted);
+    max-width: 58ch;
+    margin-bottom: 26px;
+  }
+
+  strong { font-weight: 600; }
+
+  .eq {
+    font-family: var(--mono);
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    border-left: 2px solid var(--rule);
+    padding: 4px 0 4px 16px;
+    margin: 0 0 16px;
+  }
+
+  .eq span {
+    display: block;
+    font-size: 11.5px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    margin-top: 5px;
+  }
+
+  .eq b { color: var(--accent); font-weight: 400; }
+
+  .pin {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 1px 6px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .pin.hot  { background: var(--hot-soft);  color: var(--hot); }
+  .pin.cold { background: var(--cold-soft); color: var(--cold); }
+
+  /* ---------- Figures ---------- */
+
+  figure {
+    margin: 30px 0 34px;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+    overflow: hidden;
+  }
+
+  .fig-body {
+    padding: 26px 22px 20px;
+    overflow-x: auto;
+  }
+
+  .fig-body svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+
+  figcaption {
+    border-top: 1px solid var(--rule);
+    padding: 11px 18px 13px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+
+  figcaption b {
+    color: var(--accent);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-right: 8px;
+  }
+
+  /* ---------- SVG token classes ---------- */
+
+  .s-ink    { fill: var(--ink); }
+  .s-muted  { fill: var(--muted); }
+  .s-accent { fill: var(--accent); }
+  .s-hot    { fill: var(--hot); }
+  .s-cold   { fill: var(--cold); }
+  .s-lamp   { fill: var(--lamp); }
+  .s-board  { fill: var(--board); }
+  .s-hole   { fill: var(--hole); }
+  .s-panel  { fill: var(--panel); }
+
+  .k-ink    { fill: none; stroke: var(--ink);    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .k-muted  { fill: none; stroke: var(--muted);  stroke-width: 1; stroke-linecap: round; }
+  .k-accent { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .k-hot    { fill: none; stroke: var(--hot);    stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .k-cold   { fill: none; stroke: var(--cold);   stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .k-thin   { fill: none; stroke: var(--rule);   stroke-width: 1; }
+
+  .lbl {
+    font-family: var(--mono);
+    font-size: 11px;
+    fill: var(--ink);
+    letter-spacing: 0.04em;
+  }
+  .lbl-sm { font-size: 9.5px; fill: var(--muted); letter-spacing: 0.06em; }
+  .lbl-cap {
+    font-family: var(--display);
+    font-size: 12px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    fill: var(--ink);
+  }
+  .lbl-hot  { fill: var(--hot); }
+  .lbl-cold { fill: var(--cold); }
+
+  /* Backing plate so a callout stays legible where it crosses the hole grid,
+     and reads as a label sitting on top of the board rather than a connection. */
+  .chip { fill: var(--panel); stroke: var(--rule); stroke-width: 1; }
+  .lbl-acc  { fill: var(--accent); }
+
+  .glow { animation: pulse 2.8s ease-in-out infinite; transform-origin: center; }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50%      { opacity: 0.95; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glow { animation: none; opacity: 0.7; }
+    .contents a { transition: none; }
+  }
+
+  /* ---------- Tables ---------- */
+
+  .table-wrap { overflow-x: auto; margin: 24px 0 30px; border: 1px solid var(--rule); }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 520px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--panel);
+  }
+
+  th.num { text-align: right; }
+
+  th {
+    text-align: left;
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--ink);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule-2);
+    vertical-align: top;
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  td.num { text-align: right; }
+  td.good { color: var(--accent); }
+  td.bad  { color: var(--hot); }
+
+  /* ---------- Callouts ---------- */
+
+  .note {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    padding: 16px 20px 17px;
+    margin: 26px 0 30px;
+    max-width: 66ch;
+  }
+
+  .note.warn { border-left-color: var(--hot); background: var(--hot-soft); }
+
+  .note-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 7px;
+  }
+
+  .note.warn .note-label { color: var(--hot); }
+  .note p { margin: 0 0 12px; font-size: 16px; }
+  .note p:last-child { margin: 0; }
+
+  /* ---------- Exercise ---------- */
+
+  .exercise {
+    border: 2px solid var(--ink);
+    background: var(--panel);
+    margin-top: 30px;
+  }
+
+  .exercise-head {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 13px 22px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    justify-content: space-between;
+  }
+
+  .exercise-inner { padding: 26px 24px 8px; }
+
+  .checklist { list-style: none; padding: 0; margin: 0 0 22px; max-width: 66ch; }
+
+  .checklist li {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--rule-2);
+  }
+
+  .checklist li:last-child { border-bottom: none; }
+
+  .box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--accent);
+    margin-top: 5px;
+  }
+
+  .bom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--panel);
+    margin: 4px 0 30px;
+  }
+
+  .bom div {
+    background: var(--panel);
+    box-shadow: 0 0 0 1px var(--rule);
+    padding: 13px 15px 14px;
+  }
+
+  .bom .qty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--hot);
+    letter-spacing: 0.1em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .bom .item { font-family: var(--display); font-size: 14px; line-height: 1.3; }
+
+  .colophon {
+    margin-top: 72px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 28px;
+    justify-content: space-between;
+  }
+
+  a { color: var(--accent); }
+
+  a:focus-visible,
+  .contents a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 720px) {
+    body { font-size: 16px; }
+    .block { grid-template-columns: 1fr; }
+    .block > * { grid-column: 1; }
+    .rail { grid-row: auto; position: static; margin-bottom: 10px; }
+    .cell { border-right: none; }
+    .fig-body { padding: 18px 14px 14px; }
+  }
+</style>
+
+<div class="sheet">
+
+  <!-- ================= TITLE BLOCK ================= -->
+
+  <header class="titleblock">
+    <div class="titleblock-main">
+      <div class="eyebrow">Lecture Notes · Chapter 01</div>
+      <h1>Arduino Basics<span class="sub">Ashivni's Robotics Class</span></h1>
+    </div>
+    <div class="titleblock-grid">
+      <div class="cell">
+        <span class="cell-label">Chapter</span>
+        <span class="cell-value">01 — Arduino Basics</span>
+      </div>
+      <div class="cell">
+        <span class="cell-label">Prerequisites</span>
+        <span class="cell-value">None</span>
+      </div>
+      <div class="cell">
+        <span class="cell-label">Bench kit</span>
+        <span class="cell-value">Uno · breadboard · LEDs · 1 kΩ</span>
+      </div>
+      <div class="cell">
+        <span class="cell-label">Ends with</span>
+        <span class="cell-value">Two LEDs, both lit</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="contents">
+    <a href="#s1"><span class="n">01</span><span class="t">How a breadboard works</span></a>
+    <a href="#s2"><span class="n">02</span><span class="t">Three components, three symbols</span></a>
+    <a href="#s3"><span class="n">03</span><span class="t">The pins on an Arduino</span></a>
+    <a href="#s4"><span class="n">04</span><span class="t">Lighting one LED</span></a>
+    <a href="#s5"><span class="n">05</span><span class="t">Exercise: light two LEDs</span></a>
+  </nav>
+
+  <!-- ================= 1. BREADBOARD ================= -->
+
+  <section class="block" id="s1">
+    <div class="rail">01</div>
+    <h2>How a breadboard works</h2>
+
+    <div class="prose">
+      <p class="lead">A breadboard is a grid of holes with hidden metal clips underneath. Push two wires into holes that share a clip and they are connected — no solder, no heat, nothing permanent.</p>
+
+      <p>Every hole looks the same from the top, which is exactly the problem. The whole skill is knowing which holes are secretly wired together. There are only two rules, and the coloured lines printed on the plastic tell you both.</p>
+
+      <p><strong>The power rails run vertically.</strong> Down each side of the board are two long columns marked with a red line (<span class="pin hot">+</span>) and a blue or black line (<span class="pin cold">−</span>). Every hole in one of those columns is connected to every other hole in the same column, from top to bottom. That is one continuous piece of metal. You feed your battery or your Arduino's power into these, once, and the whole board can reach it.</p>
+
+      <p><strong>The component rows run horizontally.</strong> The big middle area is split into short rows of five holes. Each group of five is connected across, and connected to nothing else. Put a resistor leg in one of those five holes and a wire in another, and they are joined.</p>
+
+      <p><strong>The channel down the middle breaks everything.</strong> The trench splitting the board in half is not decoration. A row on the left half is a completely separate node from the row on the right half, even though they look like one line. That gap exists so chips can straddle it with each leg landing in its own row.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 620" role="img" aria-label="Breadboard anatomy: vertical power rails down each side, horizontal five-hole component rows in the middle, and a channel splitting the board in half.">
+          <defs>
+            <pattern id="holes" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect class="s-hole" x="7" y="7" width="6" height="6" rx="1.4"/>
+            </pattern>
+          </defs>
+
+          <!-- board -->
+          <rect class="s-board" x="60" y="30" width="360" height="540" rx="6"/>
+          <rect x="60" y="30" width="360" height="540" rx="6" fill="none" stroke="var(--rule)" stroke-width="1"/>
+
+          <!-- centre channel -->
+          <rect x="240" y="30" width="20" height="540" fill="var(--paper)"/>
+          <line x1="240" y1="30" x2="240" y2="570" stroke="var(--rule)" stroke-width="1"/>
+          <line x1="260" y1="30" x2="260" y2="570" stroke="var(--rule)" stroke-width="1"/>
+
+          <!-- rail marking lines -->
+          <line x1="64"  y1="52" x2="64"  y2="548" stroke="var(--cold)" stroke-width="2"/>
+          <line x1="120" y1="52" x2="120" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="370" y1="52" x2="370" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="416" y1="52" x2="416" y2="548" stroke="var(--cold)" stroke-width="2"/>
+
+          <!-- holes -->
+          <rect x="70"  y="55" width="44"  height="490" fill="url(#holes)"/>
+          <rect x="135" y="55" width="100" height="490" fill="url(#holes)"/>
+          <rect x="265" y="55" width="100" height="490" fill="url(#holes)"/>
+          <rect x="376" y="55" width="44"  height="490" fill="url(#holes)"/>
+
+          <!-- rail polarity marks -->
+          <text class="lbl lbl-cold" x="90"  y="46" text-anchor="middle">−</text>
+          <text class="lbl lbl-hot"  x="110" y="46" text-anchor="middle">+</text>
+          <text class="lbl lbl-hot"  x="390" y="46" text-anchor="middle">+</text>
+          <text class="lbl lbl-cold" x="410" y="46" text-anchor="middle">−</text>
+
+          <!-- column letters -->
+          <text class="lbl lbl-sm" x="150" y="566" text-anchor="middle">A</text>
+          <text class="lbl lbl-sm" x="170" y="566" text-anchor="middle">B</text>
+          <text class="lbl lbl-sm" x="190" y="566" text-anchor="middle">C</text>
+          <text class="lbl lbl-sm" x="210" y="566" text-anchor="middle">D</text>
+          <text class="lbl lbl-sm" x="230" y="566" text-anchor="middle">E</text>
+          <text class="lbl lbl-sm" x="270" y="566" text-anchor="middle">F</text>
+          <text class="lbl lbl-sm" x="290" y="566" text-anchor="middle">G</text>
+          <text class="lbl lbl-sm" x="310" y="566" text-anchor="middle">H</text>
+          <text class="lbl lbl-sm" x="330" y="566" text-anchor="middle">I</text>
+          <text class="lbl lbl-sm" x="350" y="566" text-anchor="middle">J</text>
+
+          <!-- row numbers -->
+          <text class="lbl lbl-sm" x="430" y="74"  >1</text>
+          <text class="lbl lbl-sm" x="430" y="154" >5</text>
+          <text class="lbl lbl-sm" x="430" y="254" >10</text>
+          <text class="lbl lbl-sm" x="430" y="354" >15</text>
+          <text class="lbl lbl-sm" x="430" y="454" >20</text>
+
+          <!-- highlight: one power rail = one node -->
+          <rect x="100" y="58" width="20" height="484" rx="10"
+                fill="var(--hot)" opacity="0.16"/>
+          <rect x="100" y="58" width="20" height="484" rx="10"
+                fill="none" stroke="var(--hot)" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+          <!-- highlight: one five-hole row = one node -->
+          <rect x="140" y="242" width="100" height="20" rx="10"
+                fill="var(--accent)" opacity="0.2"/>
+          <rect x="140" y="242" width="100" height="20" rx="10"
+                fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 4"/>
+          <rect x="260" y="242" width="100" height="20" rx="10"
+                fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.55"/>
+
+          <!-- break marker across the channel -->
+          <line x1="243" y1="246" x2="257" y2="258" class="k-hot" stroke-width="2"/>
+          <line x1="257" y1="246" x2="243" y2="258" class="k-hot" stroke-width="2"/>
+
+          <!-- callouts -->
+          <line x1="120" y1="120" x2="470" y2="120" class="k-muted"/>
+          <circle cx="110" cy="120" r="3" class="s-hot"/>
+          <text class="lbl-cap lbl-hot" x="478" y="116">Power rails — vertical</text>
+          <text class="lbl lbl-sm" x="478" y="134">All 25 holes in this column are</text>
+          <text class="lbl lbl-sm" x="478" y="148">ONE node. Battery / 5 V goes here.</text>
+
+          <line x1="240" y1="252" x2="470" y2="252" class="k-muted"/>
+          <circle cx="190" cy="252" r="3" class="s-accent"/>
+          <text class="lbl-cap lbl-acc" x="478" y="248">Rows — horizontal</text>
+          <text class="lbl lbl-sm" x="478" y="266">A10–E10 are ONE node: five holes.</text>
+          <text class="lbl lbl-sm" x="478" y="280">Row 10 and row 11 are separate.</text>
+
+          <line x1="250" y1="400" x2="470" y2="400" class="k-muted"/>
+          <circle cx="250" cy="400" r="3" class="s-ink"/>
+          <text class="lbl-cap" x="478" y="396">The centre channel</text>
+          <text class="lbl lbl-sm" x="478" y="414">A10–E10 does NOT reach F10–J10.</text>
+          <text class="lbl lbl-sm" x="478" y="428">Two nodes, not one.</text>
+
+          <line x1="416" y1="500" x2="470" y2="500" class="k-muted"/>
+          <circle cx="410" cy="500" r="3" class="s-cold"/>
+          <text class="lbl-cap lbl-cold" x="478" y="496">Second pair of rails</text>
+          <text class="lbl lbl-sm" x="478" y="514">Same idea, other side. NOT joined</text>
+          <text class="lbl lbl-sm" x="478" y="528">to the left rails until you wire them.</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 1</b> Breadboard anatomy. Red dashed = one node running the long way. Green dashed = one node running the short way. The board above is drawn upright; turn it sideways and "vertical" and "horizontal" swap, but the rule never does — <em>rails run the long way, component rows run the short way.</em></figcaption>
+    </figure>
+
+    <div class="prose">
+      <p>The reason any of this works is a strip of springy metal hiding under each group of holes. Push a wire in and the clip grabs it; push a second wire into a hole above the same clip and the two are touching metal-to-metal.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 520 190" role="img" aria-label="Cut-away view of a breadboard row showing a single metal spring clip beneath five holes gripping two component legs.">
+          <rect class="s-board" x="40" y="30" width="440" height="96" rx="4"/>
+          <rect x="40" y="30" width="440" height="96" rx="4" fill="none" stroke="var(--rule)" stroke-width="1"/>
+
+          <!-- clip -->
+          <path d="M90 92 h300" fill="none" stroke="var(--muted)" stroke-width="7" stroke-linecap="round"/>
+          <g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round">
+            <path d="M110 88 v-16 M130 88 v-16"/>
+            <path d="M180 88 v-16 M200 88 v-16"/>
+            <path d="M250 88 v-16 M270 88 v-16"/>
+            <path d="M320 88 v-16 M340 88 v-16"/>
+            <path d="M390 88 v-16"/>
+          </g>
+
+          <!-- holes in the top surface -->
+          <g class="s-hole">
+            <rect x="114" y="30" width="12" height="8"/>
+            <rect x="184" y="30" width="12" height="8"/>
+            <rect x="254" y="30" width="12" height="8"/>
+            <rect x="324" y="30" width="12" height="8"/>
+            <rect x="394" y="30" width="12" height="8"/>
+          </g>
+
+          <!-- two legs pushed in -->
+          <path d="M120 4 v82" stroke="var(--hot)" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <path d="M260 4 v82" stroke="var(--ink)" stroke-width="3" stroke-linecap="round" fill="none"/>
+
+          <text class="lbl lbl-hot" x="128" y="16">wire</text>
+          <text class="lbl" x="268" y="16">resistor leg</text>
+
+          <line x1="230" y1="92" x2="230" y2="152" class="k-muted"/>
+          <text class="lbl lbl-sm" x="230" y="168" text-anchor="middle">one spring clip under all five holes — this is the connection</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 2</b> Cut-away through a single five-hole row. Nothing is soldered; the clip does the holding and the connecting.</figcaption>
+    </figure>
+
+    <div class="note">
+      <span class="note-label">Bench habit</span>
+      <p>Before you power anything up, say the circuit out loud, hole by hole: <em>"5 V rail, to A7, resistor A7 to A12, LED A12 to A15, wire A15 to ground rail."</em> Nine times out of ten, a circuit that doesn't work has two legs in the same five-hole row that were supposed to be in different ones.</p>
+    </div>
+  </section>
+
+  <!-- ================= 2. COMPONENTS ================= -->
+
+  <section class="block" id="s2">
+    <div class="rail">02</div>
+    <h2>Three components, three symbols</h2>
+
+    <div class="prose">
+      <p class="lead">Circuit diagrams don't draw what parts look like — they draw what parts <em>do</em>. Three symbols get you through this whole chapter.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 300" role="img" aria-label="Schematic symbols for a battery, a resistor, and an LED, each shown with its physical appearance below.">
+          <!-- dividers -->
+          <line x1="240" y1="20" x2="240" y2="280" class="k-thin"/>
+          <line x1="480" y1="20" x2="480" y2="280" class="k-thin"/>
+
+          <!-- ===== BATTERY ===== -->
+          <text class="lbl-cap" x="120" y="38" text-anchor="middle">Battery</text>
+
+          <path d="M40 100 h48 M152 100 h48" class="k-ink"/>
+          <g stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round">
+            <line x1="88"  y1="76"  x2="88"  y2="124"/>
+            <line x1="104" y1="88"  x2="104" y2="112"/>
+            <line x1="120" y1="76"  x2="120" y2="124"/>
+            <line x1="136" y1="88"  x2="136" y2="112"/>
+          </g>
+          <text class="lbl lbl-hot"  x="80"  y="66">+</text>
+          <text class="lbl lbl-cold" x="138" y="66">−</text>
+
+          <text class="lbl lbl-sm" x="120" y="152" text-anchor="middle">long line = +   ·   short line = −</text>
+
+          <!-- physical -->
+          <rect x="64" y="188" width="112" height="44" rx="5" class="s-panel" stroke="var(--muted)" stroke-width="1.5"/>
+          <rect x="176" y="200" width="10" height="20" rx="2" class="s-hot"/>
+          <text class="lbl lbl-sm" x="120" y="216" text-anchor="middle">9 V / cells</text>
+          <text class="lbl lbl-sm" x="120" y="256" text-anchor="middle">Pushes current out of +,</text>
+          <text class="lbl lbl-sm" x="120" y="270" text-anchor="middle">around the loop, back into −.</text>
+
+          <!-- ===== RESISTOR ===== -->
+          <text class="lbl-cap" x="360" y="38" text-anchor="middle">Resistor</text>
+
+          <path d="M280 100 h34 l10 -18 l20 36 l20 -36 l20 36 l10 -18 h34" class="k-ink"/>
+          <text class="lbl lbl-sm" x="360" y="146" text-anchor="middle">no + or − side.</text>
+          <text class="lbl lbl-sm" x="360" y="160" text-anchor="middle">Fits either way round.</text>
+
+          <!-- physical -->
+          <path d="M286 210 h20 M414 210 h20" stroke="var(--muted)" stroke-width="2" fill="none"/>
+          <rect x="306" y="196" width="108" height="28" rx="12" fill="#D8C9A6" stroke="var(--muted)" stroke-width="1"/>
+          <rect x="320" y="196" width="9" height="28" fill="#6B4A2F"/>
+          <rect x="336" y="196" width="9" height="28" fill="#1A1A1A"/>
+          <rect x="352" y="196" width="9" height="28" fill="#C0392B"/>
+          <rect x="392" y="196" width="9" height="28" fill="#C9A227"/>
+          <text class="lbl lbl-sm" x="360" y="250" text-anchor="middle">brown · black · red · gold</text>
+          <text class="lbl lbl-sm" x="360" y="270" text-anchor="middle">1 — 0 — ×100 — ±5%  =  1 kΩ</text>
+
+          <!-- ===== LED ===== -->
+          <text class="lbl-cap" x="600" y="38" text-anchor="middle">LED</text>
+
+          <path d="M520 100 h44 M636 100 h44" class="k-ink"/>
+          <path d="M566 78 v44 l40 -22 z" fill="var(--lamp)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="612" y1="76" x2="612" y2="124" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+          <g stroke="var(--lamp)" stroke-width="2" stroke-linecap="round" fill="none">
+            <path d="M598 66 l14 -14 M600 52 h12 v12"/>
+            <path d="M618 62 l14 -14 M620 48 h12 v12"/>
+          </g>
+          <text class="lbl lbl-hot"  x="546" y="90">A</text>
+          <text class="lbl lbl-cold" x="646" y="90">K</text>
+          <text class="lbl lbl-sm" x="600" y="146" text-anchor="middle">current flows A → K only,</text>
+          <text class="lbl lbl-sm" x="600" y="160" text-anchor="middle">the way the triangle points.</text>
+
+          <!-- physical -->
+          <path d="M582 190 a18 18 0 0 1 36 0 v18 h-36 z" class="s-lamp" opacity="0.85"/>
+          <path d="M582 208 h36" stroke="var(--muted)" stroke-width="1.5"/>
+          <line x1="618" y1="190" x2="618" y2="208" stroke="var(--ink)" stroke-width="3"/>
+          <path d="M590 208 v54" stroke="var(--muted)" stroke-width="2" fill="none"/>
+          <path d="M610 208 v26" stroke="var(--muted)" stroke-width="2" fill="none"/>
+          <text class="lbl lbl-sm lbl-hot"  x="584" y="276" text-anchor="end">long leg = +</text>
+          <text class="lbl lbl-sm lbl-cold" x="626" y="228">flat side,</text>
+          <text class="lbl lbl-sm lbl-cold" x="626" y="242">short leg = −</text>
+          <text class="lbl lbl-sm" x="600" y="294" text-anchor="middle">Backwards = no light, no damage.</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 3</b> Symbol on top, real part underneath. A = anode (positive, long leg). K = cathode (negative, short leg, flat edge on the plastic rim).</figcaption>
+    </figure>
+
+    <h3>Battery — the pump</h3>
+    <div class="prose">
+      <p>A battery does one job: it holds one terminal at a higher voltage than the other. Voltage is pressure. Current — the actual flow of charge — leaves the <span class="pin hot">+</span> terminal, travels the whole loop, and returns to <span class="pin cold">−</span>. If the loop is broken anywhere, nothing flows anywhere. There is no such thing as current going halfway.</p>
+      <p>In this chapter your battery is the Arduino. Its <span class="pin hot">5V</span> pin is the <span class="pin hot">+</span> terminal and its <span class="pin cold">GND</span> pin is the <span class="pin cold">−</span> terminal.</p>
+    </div>
+
+    <h3>Resistor — the tap</h3>
+    <div class="prose">
+      <p>A resistor restricts how much current gets through for a given voltage. That relationship is <strong>Ohm's law</strong>:</p>
+      <p class="eq">I = V ÷ R<span>current (amps) = voltage (volts) ÷ resistance (ohms)</span></p>
+      <p>Bigger R, smaller current. A resistor has no polarity, so it cannot be inserted backwards. You read its value off the coloured bands: for the 1 kΩ resistors in your kit, <strong>brown, black, red, gold</strong>. First band 1, second band 0, third band ×100 — that's 10 × 100 = 1000 Ω. Gold is the tolerance, ±5%.</p>
+    </div>
+
+    <h3>LED — the one-way lamp</h3>
+    <div class="prose">
+      <p>LED stands for Light Emitting Diode, and the <em>diode</em> half matters as much as the <em>light</em> half. A diode is a one-way valve: current passes from anode to cathode and is blocked in the other direction. Put an LED in backwards and it simply stays dark — annoying, not fatal.</p>
+      <p>Two ways to tell the legs apart on a fresh LED:</p>
+      <ul>
+        <li>The <strong>longer leg is the anode</strong> (+). Mnemonic: longer leg, longer word, <em>positive</em>.</li>
+        <li>The plastic rim has a <strong>flat spot on the cathode side</strong> (−). Use this once the legs have been trimmed.</li>
+      </ul>
+      <p>Here is the part that gets LEDs killed: an LED does not obey Ohm's law. Once you pass its turn-on voltage — about 2 V for a red one — it barely resists at all, so the current shoots up until something burns. An LED will happily destroy itself in under a second given the chance. It needs a resistor beside it to do the limiting. That is the entire reason for section 4.</p>
+    </div>
+  </section>
+
+  <!-- ================= 3. ARDUINO PINS ================= -->
+
+  <section class="block" id="s3">
+    <div class="rail">03</div>
+    <h2>The pins on an Arduino</h2>
+
+    <div class="prose">
+      <p class="lead">The black strips along the edges of the board are headers, and every hole in them is a pin with a name printed next to it. Three of them are all you need today.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 720 500" role="img" aria-label="Plan view of an Arduino Uno showing the digital header along the top, the power and analog headers along the bottom, with 3.3 V, 5 V and the three GND pins ringed.">
+          <!-- board -->
+          <path d="M46 88 h604 a8 8 0 0 1 8 8 v254 a8 8 0 0 1 -8 8 h-604 a8 8 0 0 1 -8 -8 v-254 a8 8 0 0 1 8 -8 z"
+                fill="var(--accent)" opacity="0.13"/>
+          <path d="M46 88 h604 a8 8 0 0 1 8 8 v254 a8 8 0 0 1 -8 8 h-604 a8 8 0 0 1 -8 -8 v-254 a8 8 0 0 1 8 -8 z"
+                fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+
+          <text class="lbl-cap lbl-acc" x="96" y="176">Arduino Uno</text>
+          <text class="lbl lbl-sm" x="96" y="196">top view</text>
+
+          <!-- USB + barrel jack -->
+          <rect x="22" y="108" width="46" height="40" rx="3" class="s-panel" stroke="var(--muted)" stroke-width="1.5"/>
+          <text class="lbl lbl-sm" x="34" y="170" text-anchor="middle">USB</text>
+          <rect x="22" y="278" width="44" height="34" rx="4" class="s-ink"/>
+          <text class="lbl lbl-sm" x="44" y="328" text-anchor="middle">power jack</text>
+
+          <!-- ===== DIGITAL HEADER (top edge) ===== -->
+          <rect x="216" y="68" width="218" height="20" rx="2" class="s-ink"/>
+          <rect x="442" y="68" width="176" height="20" rx="2" class="s-ink"/>
+          <text class="lbl lbl-sm" x="618" y="26" text-anchor="end">DIGITAL   (~ = PWM)</text>
+
+          <g class="lbl">
+            <text transform="translate(230,64) rotate(-90)">SCL</text>
+            <text transform="translate(252,64) rotate(-90)">SDA</text>
+            <text transform="translate(274,64) rotate(-90)">AREF</text>
+            <text class="lbl lbl-cold" transform="translate(296,64) rotate(-90)">GND</text>
+            <text transform="translate(318,64) rotate(-90)">13</text>
+            <text transform="translate(340,64) rotate(-90)">12</text>
+            <text transform="translate(362,64) rotate(-90)">~11</text>
+            <text transform="translate(384,64) rotate(-90)">~10</text>
+            <text transform="translate(406,64) rotate(-90)">~9</text>
+            <text transform="translate(428,64) rotate(-90)">8</text>
+            <text transform="translate(456,64) rotate(-90)">7</text>
+            <text transform="translate(478,64) rotate(-90)">~6</text>
+            <text transform="translate(500,64) rotate(-90)">~5</text>
+            <text transform="translate(522,64) rotate(-90)">4</text>
+            <text transform="translate(544,64) rotate(-90)">~3</text>
+            <text transform="translate(566,64) rotate(-90)">2</text>
+            <text transform="translate(588,64) rotate(-90)">1</text>
+            <text transform="translate(610,64) rotate(-90)">0</text>
+          </g>
+
+          <!-- third GND, on the digital side -->
+          <circle cx="292" cy="78" r="12" fill="none" stroke="var(--cold)" stroke-width="2"/>
+
+          <!-- ===== POWER HEADER (bottom edge, left) ===== -->
+          <rect x="96" y="358" width="164" height="20" rx="2" class="s-ink"/>
+          <text class="lbl lbl-sm" x="96" y="452">POWER</text>
+
+          <g class="lbl">
+            <text transform="translate(102,388) rotate(90)">IOREF</text>
+            <text transform="translate(124,388) rotate(90)">RESET</text>
+            <text class="lbl lbl-hot"  transform="translate(146,388) rotate(90)">3V3</text>
+            <text class="lbl lbl-hot"  transform="translate(168,388) rotate(90)">5V</text>
+            <text class="lbl lbl-cold" transform="translate(190,388) rotate(90)">GND</text>
+            <text class="lbl lbl-cold" transform="translate(212,388) rotate(90)">GND</text>
+            <text transform="translate(234,388) rotate(90)">VIN</text>
+          </g>
+
+          <circle cx="150" cy="368" r="10" fill="none" stroke="var(--hot)"  stroke-width="2"/>
+          <circle cx="172" cy="368" r="10" fill="none" stroke="var(--hot)"  stroke-width="2"/>
+          <circle cx="194" cy="368" r="10" fill="none" stroke="var(--cold)" stroke-width="2"/>
+          <circle cx="216" cy="368" r="10" fill="none" stroke="var(--cold)" stroke-width="2"/>
+
+          <!-- ===== ANALOG HEADER (bottom edge, right) ===== -->
+          <rect x="392" y="358" width="142" height="20" rx="2" class="s-ink"/>
+          <text class="lbl lbl-sm" x="392" y="452">ANALOG IN</text>
+
+          <g class="lbl">
+            <text transform="translate(398,388) rotate(90)">A0</text>
+            <text transform="translate(420,388) rotate(90)">A1</text>
+            <text transform="translate(442,388) rotate(90)">A2</text>
+            <text transform="translate(464,388) rotate(90)">A3</text>
+            <text transform="translate(486,388) rotate(90)">A4</text>
+            <text transform="translate(508,388) rotate(90)">A5</text>
+          </g>
+
+          <!-- ===== KEY (inside the board area, right) ===== -->
+          <line x1="358" y1="112" x2="358" y2="330" class="k-thin"/>
+
+          <circle cx="382" cy="128" r="9" fill="none" stroke="var(--hot)" stroke-width="2"/>
+          <text class="lbl-cap lbl-hot" x="402" y="126">5V</text>
+          <text class="lbl lbl-sm" x="402" y="144">A steady 5 volts above GND, always on</text>
+          <text class="lbl lbl-sm" x="402" y="158">whenever the board is powered. ~500 mA.</text>
+          <text class="lbl lbl-sm" x="402" y="172">This is your default supply.</text>
+
+          <circle cx="382" cy="206" r="9" fill="none" stroke="var(--hot)" stroke-width="2"/>
+          <text class="lbl-cap lbl-hot" x="402" y="204">3V3</text>
+          <text class="lbl lbl-sm" x="402" y="222">3.3 volts, from a small regulator.</text>
+          <text class="lbl lbl-sm" x="402" y="236">Only ~50 mA — for parts that are</text>
+          <text class="lbl lbl-sm" x="402" y="250">damaged by 5 V. Not general purpose.</text>
+
+          <circle cx="382" cy="284" r="9" fill="none" stroke="var(--cold)" stroke-width="2"/>
+          <text class="lbl-cap lbl-cold" x="402" y="282">GND</text>
+          <text class="lbl lbl-sm" x="402" y="300">0 volts. Three pins — two here, one up</text>
+          <text class="lbl lbl-sm" x="402" y="314">on the digital header. All one node,</text>
+          <text class="lbl lbl-sm" x="402" y="328">so use whichever is nearest.</text>
+
+          <text class="lbl lbl-sm" x="96" y="476">Every pin name is printed on the board itself — read the silkscreen, don't count holes.</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 4</b> Arduino Uno pin map. Pin names are printed on the board itself in exactly this order — read the silkscreen, don't count holes.</figcaption>
+    </figure>
+
+    <h3>GND — the pin everything comes back to</h3>
+    <div class="prose">
+      <p><span class="pin cold">GND</span> is short for <em>ground</em>. It is the <span class="pin cold">−</span> terminal, the zero-volt reference, and the destination for every bit of current that leaves any other pin. Voltage is always a <em>difference</em>, and GND is what the difference is measured against — "5 V" really means "5 volts above GND."</p>
+      <p>An Uno has <strong>three GND pins</strong>: two side by side on the POWER header, and one on the digital header between <span class="pin">AREF</span> and pin <span class="pin">13</span>. They are all the same piece of copper inside the board, so pick whichever one is nearest your wire. There is no "better" ground.</p>
+    </div>
+
+    <h3>5V and 3V3 — the two supplies</h3>
+    <div class="prose">
+      <p><span class="pin hot">5V</span> is your workhorse. Whenever the board is powered — over USB or from the barrel jack — this pin sits at a steady 5 volts above GND. It is the pin you will wire to the red rail of your breadboard for the rest of this chapter.</p>
+      <p><span class="pin hot">3V3</span> gives 3.3 volts instead. Plenty of modern sensors and radio modules are damaged by 5 V and need this one. It comes from a small regulator and can only supply about 50 mA, so it is not a general-purpose power source — treat it as a specialist tool.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Pin</th><th>Voltage</th><th class="num">Current budget</th><th>Reach for it when</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5V</td><td>5.0 V</td><td class="num">~500 mA</td><td>Default supply — LEDs, buzzers, most beginner parts</td></tr>
+          <tr><td>3V3</td><td>3.3 V</td><td class="num">50 mA</td><td>A part's datasheet says 3.3 V only</td></tr>
+          <tr><td>GND</td><td>0 V</td><td class="num">—</td><td>Always. Every circuit returns here</td></tr>
+          <tr><td>VIN</td><td>7–12 V in</td><td class="num">—</td><td>Feeding the board from an external supply</td></tr>
+          <tr><td>D0–D13</td><td>0 V or 5 V</td><td class="num">20 mA each</td><td>You want software to switch something on and off</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note warn">
+      <span class="note-label">Never do this</span>
+      <p>Do not put a wire directly from <span class="pin hot">5V</span> to <span class="pin cold">GND</span>. That is a short circuit: no resistance in the path, so the current is limited only by what the board can deliver. Best case a protection fuse trips and the board goes dead until you unplug it. Wires get hot fast.</p>
+      <p>Same rule for the breadboard: never run a jumper straight from the red rail to the blue rail.</p>
+    </div>
+  </section>
+
+  <!-- ================= 4. ONE LED ================= -->
+
+  <section class="block" id="s4">
+    <div class="rail">04</div>
+    <h2>Lighting one LED</h2>
+
+    <div class="prose">
+      <p class="lead">Everything so far comes together in a loop with three parts: a supply, a resistor to limit the current, and an LED to spend it as light.</p>
+      <p>Read the schematic as a journey. Current leaves <span class="pin hot">5V</span> at the top, is squeezed through the resistor, passes down through the LED from anode to cathode — making light on the way — and arrives back at <span class="pin cold">GND</span>. One loop, no branches, no dead ends.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 560 340" role="img" aria-label="Schematic of one LED: 5 volts through a 1 kilohm resistor, through the LED from anode to cathode, to ground.">
+          <!-- supply flag -->
+          <path d="M150 44 h84 l14 14 l-14 14 h-84 z" fill="var(--hot)" opacity="0.16"/>
+          <path d="M150 44 h84 l14 14 l-14 14 h-84 z" fill="none" stroke="var(--hot)" stroke-width="1.5"/>
+          <text class="lbl lbl-hot" x="192" y="62" text-anchor="middle">5V</text>
+
+          <!-- wire down -->
+          <path d="M280 58 h-32 M280 58 v56" class="k-ink"/>
+
+          <!-- resistor -->
+          <path d="M280 114 v10 l-16 8 l32 16 l-32 16 l32 16 l-16 8 v10" class="k-ink"/>
+          <text class="lbl" x="316" y="150">R1</text>
+          <text class="lbl" x="316" y="166">1 kΩ</text>
+
+          <!-- wire -->
+          <path d="M280 198 v26" class="k-ink"/>
+
+          <!-- LED -->
+          <circle cx="280" cy="252" r="30" class="s-lamp glow" opacity="0.22"/>
+          <path d="M258 230 h44 l-22 40 z" fill="var(--lamp)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+          <line x1="256" y1="272" x2="304" y2="272" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+          <g stroke="var(--lamp)" stroke-width="2" stroke-linecap="round" fill="none">
+            <path d="M310 236 l16 -16 M312 220 h14 v14"/>
+            <path d="M310 258 l16 -16 M312 242 h14 v14"/>
+          </g>
+          <text class="lbl lbl-hot"  x="238" y="234" text-anchor="end">A</text>
+          <text class="lbl lbl-cold" x="238" y="278" text-anchor="end">K</text>
+          <text class="lbl" x="342" y="252">LED1</text>
+          <text class="lbl lbl-sm" x="342" y="268">red, Vf ≈ 2 V</text>
+
+          <!-- wire to ground -->
+          <path d="M280 272 v34" class="k-ink"/>
+          <g stroke="var(--ink)" stroke-width="3" stroke-linecap="round">
+            <line x1="258" y1="306" x2="302" y2="306"/>
+            <line x1="266" y1="316" x2="294" y2="316"/>
+            <line x1="274" y1="326" x2="286" y2="326"/>
+          </g>
+          <text class="lbl lbl-cold" x="316" y="312">GND</text>
+
+          <!-- current annotation -->
+          <path d="M180 100 v170" fill="none" stroke="var(--hot)" stroke-width="1.5" stroke-dasharray="5 5"/>
+          <path d="M174 268 l6 14 l6 -14 z" class="s-hot"/>
+          <text class="lbl lbl-hot" x="168" y="180" text-anchor="end">current</text>
+          <text class="lbl lbl-hot" x="168" y="196" text-anchor="end">3 mA</text>
+
+          <text class="lbl-cap" x="470" y="52" text-anchor="end">Node list</text>
+          <text class="lbl lbl-sm" x="470" y="72" text-anchor="end">5V  →  R1</text>
+          <text class="lbl lbl-sm" x="470" y="88" text-anchor="end">R1  →  LED1 anode</text>
+          <text class="lbl lbl-sm" x="470" y="104" text-anchor="end">LED1 cathode  →  GND</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 5</b> The schematic. Order does not matter electrically — resistor before or after the LED limits the same current — but drawing it first makes the intent obvious.</figcaption>
+    </figure>
+
+    <h3>Why 1 kΩ, and what it actually buys you</h3>
+    <div class="prose">
+      <p>A red LED drops about 2 V across itself once it lights. The supply is 5 V. So the resistor gets whatever's left over:</p>
+      <p class="eq">V<sub>R</sub> = 5 V − 2 V = 3 V<span>the resistor gets whatever the LED doesn't</span></p>
+      <p class="eq">I = V<sub>R</sub> ÷ R = 3 V ÷ 1000 Ω = 0.003 A<span>= <b>3 mA</b> through the whole loop</span></p>
+      <p>A typical 5 mm LED is rated for 20 mA and starts being visible around 1 mA. At 3 mA you get a clear, comfortable glow with an enormous safety margin — you would need to be off by a factor of six before anything is at risk. That margin is exactly what you want in a room full of first circuits.</p>
+      <p>With no resistor at all, the only thing opposing the current is the LED's own tiny internal resistance and the board's limits. Hundreds of milliamps try to flow, and the LED dies — often instantly, sometimes with a small pop.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Supply</th><th>LED</th><th>Resistor</th><th class="num">Current</th><th>Result</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>5 V</td><td>red, 2.0 V</td><td>1 kΩ</td><td class="num">3.0 mA</td><td class="good">Safe, clearly lit — use this</td></tr>
+          <tr><td>5 V</td><td>red, 2.0 V</td><td>220 Ω</td><td class="num">13.6 mA</td><td class="good">Brighter, still under the 20 mA limit</td></tr>
+          <tr><td>5 V</td><td>red, 2.0 V</td><td>none</td><td class="num">≫ 100 mA</td><td class="bad">LED destroyed</td></tr>
+          <tr><td>3.3 V</td><td>red, 2.0 V</td><td>1 kΩ</td><td class="num">1.3 mA</td><td>Works, noticeably dim</td></tr>
+          <tr><td>3.3 V</td><td>blue, 3.1 V</td><td>1 kΩ</td><td class="num">0.2 mA</td><td class="bad">Barely glows — not enough headroom</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Building it on the breadboard</h3>
+    <div class="prose">
+      <p>Now translate the schematic into holes. Power off — unplug the USB — while you wire, then plug in last.</p>
+      <ol>
+        <li>Red jumper: Arduino <span class="pin hot">5V</span> → any hole in the <span class="pin hot">+</span> rail.</li>
+        <li>Black jumper: Arduino <span class="pin cold">GND</span> → any hole in the <span class="pin cold">−</span> rail.</li>
+        <li>Red jumper: <span class="pin hot">+</span> rail → <span class="pin">A7</span>.</li>
+        <li>Resistor: <span class="pin">B7</span> → <span class="pin">B12</span>. Rows 7 and 12 are different nodes, which is what makes it a series component rather than a bridge across the same row.</li>
+        <li>LED: long leg into <span class="pin">C12</span>, short leg into <span class="pin">C15</span>.</li>
+        <li>Black jumper: <span class="pin">D15</span> → <span class="pin cold">−</span> rail.</li>
+      </ol>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 740 620" role="img" aria-label="Breadboard build of the single LED circuit, showing jumper wires from 5 volts and ground to the rails, a resistor between rows 7 and 12, and an LED between rows 12 and 15.">
+          <defs>
+            <pattern id="holes2" width="20" height="20" patternUnits="userSpaceOnUse">
+              <rect class="s-hole" x="7" y="7" width="6" height="6" rx="1.4"/>
+            </pattern>
+          </defs>
+
+          <!-- Shifted right to clear the incoming-wire labels. The offset is a
+               multiple of the 20-unit hole pitch, so the pattern stays aligned. -->
+          <g transform="translate(40,0)">
+
+          <rect class="s-board" x="60" y="30" width="360" height="540" rx="6"/>
+          <rect x="60" y="30" width="360" height="540" rx="6" fill="none" stroke="var(--rule)" stroke-width="1"/>
+          <rect x="240" y="30" width="20" height="540" fill="var(--paper)"/>
+
+          <line x1="64"  y1="52" x2="64"  y2="548" stroke="var(--cold)" stroke-width="2"/>
+          <line x1="120" y1="52" x2="120" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="370" y1="52" x2="370" y2="548" stroke="var(--hot)"  stroke-width="2"/>
+          <line x1="416" y1="52" x2="416" y2="548" stroke="var(--cold)" stroke-width="2"/>
+
+          <rect x="70"  y="55" width="44"  height="490" fill="url(#holes2)"/>
+          <rect x="135" y="55" width="100" height="490" fill="url(#holes2)"/>
+          <rect x="265" y="55" width="100" height="490" fill="url(#holes2)"/>
+          <rect x="376" y="55" width="44"  height="490" fill="url(#holes2)"/>
+
+          <text class="lbl lbl-sm" x="150" y="566" text-anchor="middle">A</text>
+          <text class="lbl lbl-sm" x="170" y="566" text-anchor="middle">B</text>
+          <text class="lbl lbl-sm" x="190" y="566" text-anchor="middle">C</text>
+          <text class="lbl lbl-sm" x="210" y="566" text-anchor="middle">D</text>
+          <text class="lbl lbl-sm" x="230" y="566" text-anchor="middle">E</text>
+          <text class="lbl lbl-sm" x="430" y="194">7</text>
+          <text class="lbl lbl-sm" x="430" y="294">12</text>
+          <text class="lbl lbl-sm" x="430" y="354">15</text>
+
+          <!-- incoming supply wires -->
+          <path d="M110 70 v-46" class="k-hot"/>
+          <path d="M90 70 v-30 h-40" class="k-cold"/>
+          <text class="lbl lbl-hot"  x="118" y="18">from 5V</text>
+          <text class="lbl lbl-cold" x="46"  y="36" text-anchor="end">from GND</text>
+          <circle cx="110" cy="70" r="4.5" class="s-hot"/>
+          <circle cx="90"  cy="70" r="4.5" class="s-cold"/>
+
+          <!-- step 3: rail to A7 -->
+          <path d="M110 190 h40" class="k-hot"/>
+          <circle cx="110" cy="190" r="4.5" class="s-hot"/>
+          <circle cx="150" cy="190" r="4.5" class="s-hot"/>
+          <rect class="chip" x="138" y="166" width="24" height="14" rx="3"/>
+          <text class="lbl lbl-sm lbl-hot" x="150" y="176" text-anchor="middle">A7</text>
+
+          <!-- step 4: resistor B7 -> B12 -->
+          <path d="M170 190 v100" fill="none" stroke="var(--muted)" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="158" y="212" width="24" height="56" rx="11" fill="#D8C9A6" stroke="var(--muted)" stroke-width="1"/>
+          <rect x="158" y="220" width="24" height="8" fill="#6B4A2F"/>
+          <rect x="158" y="232" width="24" height="8" fill="#1A1A1A"/>
+          <rect x="158" y="244" width="24" height="8" fill="#C0392B"/>
+          <rect x="158" y="256" width="24" height="6" fill="#C9A227"/>
+          <circle cx="170" cy="190" r="4.5" class="s-ink"/>
+          <circle cx="170" cy="290" r="4.5" class="s-ink"/>
+          <rect class="chip" x="192" y="196" width="26" height="14" rx="3"/>
+          <text class="lbl lbl-sm" x="196" y="206">B7</text>
+          <rect class="chip" x="192" y="278" width="32" height="14" rx="3"/>
+          <text class="lbl lbl-sm" x="196" y="288">B12</text>
+
+          <!-- step 5: LED C12 -> C15 -->
+          <circle cx="190" cy="320" r="26" class="s-lamp glow" opacity="0.3"/>
+          <path d="M190 290 v10" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M190 340 v10" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+          <path d="M176 336 v-14 a14 14 0 0 1 28 0 v14 z" class="s-lamp" opacity="0.9"/>
+          <line x1="204" y1="322" x2="204" y2="336" stroke="var(--ink)" stroke-width="2.5"/>
+          <circle cx="190" cy="290" r="4.5" class="s-hot"/>
+          <circle cx="190" cy="350" r="4.5" class="s-cold"/>
+          <rect class="chip" x="218" y="296" width="94" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-hot"  x="223" y="307">C12 · long leg</text>
+          <rect class="chip" x="218" y="345" width="100" height="15" rx="3"/>
+          <text class="lbl lbl-sm lbl-cold" x="223" y="356">C15 · short leg</text>
+
+          <!-- step 6: D15 -> minus rail, arced over -->
+          <path d="M210 350 C 190 402, 120 402, 90 356" class="k-cold"/>
+          <circle cx="210" cy="350" r="4.5" class="s-cold"/>
+          <circle cx="90"  cy="350" r="4.5" class="s-cold"/>
+          <rect class="chip" x="112" y="394" width="76" height="14" rx="3"/>
+          <text class="lbl lbl-sm lbl-cold" x="150" y="404" text-anchor="middle">D15 → − rail</text>
+
+          <!-- side notes -->
+          <text class="lbl-cap" x="460" y="122">Watch the rows</text>
+          <text class="lbl lbl-sm" x="460" y="142">The resistor spans row 7 → row 12.</text>
+          <text class="lbl lbl-sm" x="460" y="156">Both legs in row 7 would short it out</text>
+          <text class="lbl lbl-sm" x="460" y="170">and the LED would burn.</text>
+
+          <text class="lbl-cap" x="460" y="214">Shared rows do the joining</text>
+          <text class="lbl lbl-sm" x="460" y="234">Resistor leg is in B12, LED leg in C12.</text>
+          <text class="lbl lbl-sm" x="460" y="248">Same row = already connected.</text>
+          <text class="lbl lbl-sm" x="460" y="262">No extra wire needed.</text>
+
+          <text class="lbl-cap" x="460" y="306">Right-hand rails unused</text>
+          <text class="lbl lbl-sm" x="460" y="326">They are a separate pair. Nothing</text>
+          <text class="lbl lbl-sm" x="460" y="340">reaches them until you run a jumper.</text>
+
+          </g>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 6</b> The same circuit as Fig. 5, built. Every schematic wire becomes either a jumper or a shared five-hole row — those are the only two ways a breadboard connects anything.</figcaption>
+    </figure>
+
+    <div class="note">
+      <span class="note-label">If it doesn't light</span>
+      <p>Work the list in order. <strong>1.</strong> Is the LED backwards? Pull it out, flip it, push it back — this is the answer most of the time. <strong>2.</strong> Are both legs of a component in the <em>same</em> five-hole row? Then it is shorted out. <strong>3.</strong> Did a leg land in the channel instead of a hole? <strong>4.</strong> Is the board actually powered — is the green <span class="pin">ON</span> light lit? <strong>5.</strong> Swap in a different LED; occasionally you get a dud.</p>
+    </div>
+  </section>
+
+  <!-- ================= 5. EXERCISE ================= -->
+
+  <section class="block" id="s5">
+    <div class="rail">05</div>
+    <h2>Exercise: light two LEDs</h2>
+
+    <div class="prose">
+      <p class="lead">Here is a schematic and nothing else. Your job is to turn it into a working breadboard — no build photo this time.</p>
+      <p>Both LEDs sit between the same two nodes, <span class="pin hot">5V</span> and <span class="pin cold">GND</span>, in two separate branches. That arrangement is called <strong>parallel</strong>. Each branch gets its own 1 kΩ resistor, and each branch carries its own 3 mA independently of the other.</p>
+    </div>
+
+    <figure>
+      <div class="fig-body">
+        <svg viewBox="0 0 600 380" role="img" aria-label="Exercise schematic: two LEDs in parallel between 5 volts and ground, each with its own 1 kilohm resistor in series.">
+          <!-- supply flag -->
+          <path d="M96 40 h80 l14 14 l-14 14 h-80 z" fill="var(--hot)" opacity="0.16"/>
+          <path d="M96 40 h80 l14 14 l-14 14 h-80 z" fill="none" stroke="var(--hot)" stroke-width="1.5"/>
+          <text class="lbl lbl-hot" x="136" y="58" text-anchor="middle">5V</text>
+
+          <!-- top rail -->
+          <path d="M190 54 h230" class="k-ink"/>
+          <path d="M230 54 v56 M390 54 v56" class="k-ink"/>
+          <circle cx="230" cy="54" r="4" class="s-ink"/>
+          <circle cx="390" cy="54" r="4" class="s-ink"/>
+
+          <!-- resistors -->
+          <path d="M230 110 v8 l-15 8 l30 15 l-30 15 l30 15 l-15 8 v8" class="k-ink"/>
+          <path d="M390 110 v8 l-15 8 l30 15 l-30 15 l30 15 l-15 8 v8" class="k-ink"/>
+          <text class="lbl" x="256" y="146">R1</text>
+          <text class="lbl" x="256" y="162">1 kΩ</text>
+          <text class="lbl" x="416" y="146">R2</text>
+          <text class="lbl" x="416" y="162">1 kΩ</text>
+
+          <path d="M230 187 v25 M390 187 v25" class="k-ink"/>
+
+          <!-- LEDs -->
+          <g>
+            <path d="M210 218 h40 l-20 36 z" fill="var(--lamp)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+            <line x1="208" y1="256" x2="252" y2="256" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <g stroke="var(--lamp)" stroke-width="1.8" stroke-linecap="round" fill="none">
+              <path d="M256 224 l14 -14 M258 210 h12 v12"/>
+              <path d="M256 244 l14 -14 M258 230 h12 v12"/>
+            </g>
+            <text class="lbl lbl-hot"  x="196" y="222" text-anchor="end">A</text>
+            <text class="lbl lbl-cold" x="196" y="262" text-anchor="end">K</text>
+            <text class="lbl" x="278" y="248">LED1</text>
+          </g>
+          <g>
+            <path d="M370 218 h40 l-20 36 z" fill="var(--lamp)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+            <line x1="368" y1="256" x2="412" y2="256" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+            <g stroke="var(--lamp)" stroke-width="1.8" stroke-linecap="round" fill="none">
+              <path d="M416 224 l14 -14 M418 210 h12 v12"/>
+              <path d="M416 244 l14 -14 M418 230 h12 v12"/>
+            </g>
+            <text class="lbl lbl-hot"  x="356" y="222" text-anchor="end">A</text>
+            <text class="lbl lbl-cold" x="356" y="262" text-anchor="end">K</text>
+            <text class="lbl" x="438" y="248">LED2</text>
+          </g>
+
+          <!-- bottom rail to ground -->
+          <path d="M230 256 v56 M390 256 v56 M230 312 h160" class="k-ink"/>
+          <path d="M310 312 v22" class="k-ink"/>
+          <circle cx="230" cy="312" r="4" class="s-ink"/>
+          <circle cx="390" cy="312" r="4" class="s-ink"/>
+          <g stroke="var(--ink)" stroke-width="3" stroke-linecap="round">
+            <line x1="288" y1="334" x2="332" y2="334"/>
+            <line x1="296" y1="344" x2="324" y2="344"/>
+            <line x1="304" y1="354" x2="316" y2="354"/>
+          </g>
+          <text class="lbl lbl-cold" x="344" y="340">GND</text>
+
+          <!-- branch annotations -->
+          <path d="M196 100 v180" fill="none" stroke="var(--hot)" stroke-width="1.2" stroke-dasharray="5 5"/>
+          <path d="M356 100 v180" fill="none" stroke="var(--hot)" stroke-width="1.2" stroke-dasharray="5 5"/>
+          <text class="lbl lbl-hot lbl-sm" x="188" y="196" text-anchor="end">3 mA</text>
+          <text class="lbl lbl-hot lbl-sm" x="348" y="196" text-anchor="end">3 mA</text>
+
+          <text class="lbl-cap" x="472" y="60">Two branches,</text>
+          <text class="lbl-cap" x="472" y="78">same nodes</text>
+          <text class="lbl lbl-sm" x="472" y="98">Unplug one LED and</text>
+          <text class="lbl lbl-sm" x="472" y="112">the other stays lit.</text>
+        </svg>
+      </div>
+      <figcaption><b>Fig. 7</b> Build this. Two LEDs in parallel, each with its own current-limiting resistor. Note there is no drawing of the breadboard — working out which holes to use is the exercise.</figcaption>
+    </figure>
+
+    <div class="exercise">
+      <div class="exercise-head">
+        <span>Exercise 1.1 — Two LEDs</span>
+        <span>Working time: 20 min · Pairs</span>
+      </div>
+      <div class="exercise-inner">
+
+        <h3 style="margin-top:0;">What you need</h3>
+        <div class="bom">
+          <div><span class="qty">×1</span><span class="item">Arduino Uno + USB cable</span></div>
+          <div><span class="qty">×1</span><span class="item">Breadboard</span></div>
+          <div><span class="qty">×2</span><span class="item">LEDs (any colour)</span></div>
+          <div><span class="qty">×2</span><span class="item">1 kΩ resistors<br><span style="font-family:var(--mono);font-size:11px;color:var(--muted)">brown black red gold</span></span></div>
+          <div><span class="qty">×4</span><span class="item">Jumper wires</span></div>
+        </div>
+
+        <h3>Your steps</h3>
+        <ul class="checklist">
+          <li><span class="box"></span><span><strong>Plan on paper first.</strong> Write the node list before you touch a component — which row each leg goes in, from 5 V all the way back to GND. Show it to me before you build.</span></li>
+          <li><span class="box"></span><span><strong>Wire it with the USB unplugged.</strong> Power the rails first (5 V → red rail, GND → blue rail), then build both branches.</span></li>
+          <li><span class="box"></span><span><strong>Give each LED its own resistor.</strong> Two LEDs sharing one resistor is a different circuit, and a worse one — the brighter LED steals current from the dimmer one.</span></li>
+          <li><span class="box"></span><span><strong>Keep the branches in different rows.</strong> If LED1's anode and LED2's anode land in the same five-hole row, you have joined them by accident.</span></li>
+          <li><span class="box"></span><span><strong>Plug in the USB.</strong> Both LEDs should light, equally bright.</span></li>
+          <li><span class="box"></span><span><strong>Test it.</strong> Unplug the USB, pull LED1 out of the board, plug back in. LED2 must still light. If it doesn't, your branches aren't parallel — find the shared row.</span></li>
+        </ul>
+
+        <h3>Check your understanding</h3>
+        <div class="prose">
+          <ol>
+            <li>How much total current is the Arduino's <span class="pin hot">5V</span> pin supplying with both LEDs lit? How does that compare to its ~500 mA budget?</li>
+            <li>You put both LEDs in <em>series</em> instead — 5 V, one resistor, LED1, LED2, GND. Each LED drops 2 V, so how much is left across the resistor, and what current flows? Predict the brightness before you try it.</li>
+            <li>Someone swaps a 1 kΩ resistor for 10 kΩ on one branch. What changes, and by how much?</li>
+            <li>What single wire, added anywhere, would turn this into the short circuit from the warning in section 3?</li>
+          </ol>
+        </div>
+
+        <h3>Going further</h3>
+        <div class="prose">
+          <p>Finished early? Move the top end of one branch off the <span class="pin hot">5V</span> pin and onto digital pin <span class="pin">13</span> instead. That LED is now under software control rather than permanently on — which is exactly where the next chapter starts.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <span>Ashivni's Robotics Class · Chapter 01 · Arduino Basics</span>
+    <span>Next: making a pin turn things on and off</span>
+  </footer>
+
+</div>
+
+<style>
+  /* ============================================================
+     PRINT
+     A4, ink-on-paper. One section per sheet, figures kept whole.
+     ============================================================ */
+
+  @page {
+    size: A4 portrait;
+    margin: 14mm 15mm 16mm;
+  }
+
+  @media print {
+
+    /* Force the light palette regardless of the reader's OS theme.
+       Listed with the same specificity as the dark override above,
+       and later in source order, so it wins. */
+    :root,
+    :root[data-theme="dark"],
+    :root[data-theme="light"] {
+      --paper:   #FFFFFF;
+      --panel:   #FFFFFF;
+      --board:   #ECEEE8;
+      --hole:    #2C332D;
+      --ink:     #101711;
+      --muted:   #4E5A52;
+      --rule:    #BFC8BE;
+      --rule-2:  #DDE3DC;
+      --accent:  #0A5C42;
+      --accent-soft: #0A5C4218;
+      --hot:     #B3311F;
+      --hot-soft:#B3311F1C;
+      --cold:    #21528F;
+      --cold-soft:#21528F1C;
+      --lamp:    #A9662B;
+    }
+
+    /* Keep the diagram colour code — the notes are unreadable in greyscale. */
+    *, *::before, *::after {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      background: #fff;
+      font-size: 10.5pt;
+      line-height: 1.5;
+    }
+
+    .sheet { max-width: none; padding: 0; }
+
+    /* Page 1 is the title block and the contents; each numbered
+       section then opens its own sheet. */
+    .block {
+      break-before: page;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: none;
+      column-gap: 22px;
+      grid-template-columns: 62px minmax(0, 1fr);
+    }
+
+    .rail { position: static; }
+
+    .titleblock { margin-top: 0; }
+    .contents { margin-bottom: 0; }
+    .contents a { background: #fff; }
+
+    /* Nothing that reads as one unit may straddle a page break. */
+    figure,
+    .table-wrap,
+    .note,
+    .bom,
+    .eq,
+    .exercise-head,
+    .checklist li,
+    tr { break-inside: avoid; }
+
+    .exercise { break-inside: auto; }
+
+    h1, h2, h3 { break-after: avoid; }
+    figcaption { break-before: avoid; }
+    /* Without this the black banner strands itself at the foot of a page
+       above an empty box. */
+    .exercise-head { break-after: avoid; }
+
+    /* Scroll containers must open up — on paper there is nowhere to scroll. */
+    .fig-body,
+    .table-wrap { overflow: visible; }
+
+    table { min-width: 0; }
+    /* Values are short and must not wrap mid-quantity ("red, 2.0 / V");
+       only the trailing prose column is allowed to flow. */
+    th, td { white-space: nowrap; }
+    th:last-child, td:last-child { white-space: normal; }
+
+    /* Cap the drawing width so a tall figure plus its lead-in prose still
+       lands on one sheet instead of bumping to the next and stranding a
+       half-empty page. Everything scales from the viewBox, so this just
+       makes the diagrams smaller, never clipped. */
+    .fig-body { padding: 14px 10px 10px; }
+    .fig-body svg { max-width: 148mm; }
+
+    .prose { max-width: none; }
+    .lead { font-size: 12pt; }
+
+    a { color: inherit; text-decoration: none; }
+
+    .glow { animation: none; opacity: 0.7; }
+
+    /* The checkboxes are meant to be ticked with a pen. */
+    .box { border-color: var(--ink); }
+
+    .colophon { margin-top: 24px; }
+  }
+</style>
+</body>
+</html>
